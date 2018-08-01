@@ -1,0 +1,812 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>快速评估</title>
+  <link href="http://192.168.0.42/resource/cloud/css/global/base.css?v=20141111" rel="stylesheet" type="text/css" />
+  <link href="http://192.168.0.42/resource/cloud/css/global/button.css?v=20141111" rel="stylesheet" type="text/css" />
+  <link href="http://192.168.0.42/resource/cloud/css/global/widgets.css?v=20141111" rel="stylesheet" type="text/css" />
+  <link href="http://192.168.0.42/resource/cloud/css/module/table_inquiry.css?v=20141111" rel="stylesheet" type="text/css"
+  />
+  <link href="http://192.168.0.42/resource/cloud/css/global/general.css?v=20141111" rel="stylesheet" type="text/css" />
+  <link href="http://192.168.0.42/resource/cloud/css/module/cloud.css?v=20141111" rel="stylesheet" type="text/css" />
+  <link href="http://192.168.0.42/resource/cloud/css/global/table.css?v=20141111" rel="stylesheet" type="text/css" />
+
+  <link href="http://192.168.0.42/resource/cloud/scripts/plugin/ingrid/css/ingrid.css" rel="stylesheet" type="text/css" />
+  <link href="http://192.168.0.42/resource/cloud/scripts/plugin/ligerUI/skins/Gray/css/ligerui-grid.css" rel="stylesheet" type="text/css"
+  />
+  <link href="http://192.168.0.42/resource/cloud/scripts/plugin/ligerUI/skins/ligerui-icons.css" rel="stylesheet" type="text/css"
+  />
+
+  <link rel="stylesheet" href="rapid-assessment.css">
+  <link rel="stylesheet" href="./toast.css">
+  <script type="text/javascript" src="./vue.js"></script>
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+  </style>
+</head>
+
+
+<body>
+  <article class="article-body flexbox flex-dic-cl flex-jc-tc flex-al-tc ">
+    <section id="vm" action="#" v-cloak>
+      <div class="input-body flexbox mb-10">
+        <div class="left-area mr-10 flexbox flex-dic-cl">
+          <div class="title flexbox flex-al-tc">房价评估</div>
+          <div class="content flexbox flex-dic-cl">
+            <div class="item">
+              <p>
+                <i>*</i>小区</p>
+              <input type="text" v-model="cityKeyword" @input="selectGardenList">
+              <div class="lists" v-if="gardenList.length&&cityKeyword">
+                <ul>
+                  <li v-for="item in gardenList" :data-id="item.id" @click="buildingList">{{item.name}}</li>
+                </ul>
+              </div>
+            </div>
+            <div class="item">
+              <p>
+                <i>*</i>楼栋</p>
+              <select name="" id="gardenName" v-model="gardenIndex" @change="roomList" :disabled="!buildList.length">
+                <option value="" disabled selected>选择楼栋</option>
+                <option v-for="(item,index) in buildList" :value="index" :data-id="item.id">{{item.name}}</option>
+
+              </select>
+            </div>
+            <div class="item">
+              <p>
+                <i>*</i>房号</p>
+              <select name="" id="houseName" v-model="houseIndex" @change="defaultList" :disabled="!(buildList.length&&houseList.length)">
+                <option value="" disabled selected>选择房号</option>
+                <option v-for="(item,index) in houseList" :value="index" :data-id="item.id" :data-roomNumber="item.roomNumber" :data-maxFloor="item.maxFloor"
+                  :data-floor="item.floor" :data-bedRoom="item.bedRoom" :data-livingRoom="item.livingRoom" :data-buildArea="item.buildArea"
+                  :data-direction="item.direction" :data-decoration="item.decoration">{{item.roomNumber}}</option>
+              </select>
+            </div>
+            <div class="item">
+              <p>
+                <i>*</i>楼层</p>
+              <div class="in-ceng" style="margin-right: 10px;">
+                <input type="text" style="width: 100px" v-model="floor" :disabled="!(buildList.length&&houseList.length)">
+              </div>
+              <div class="in-ceng total-ceng">
+                <input type="text" style="width: 100px" v-model="maxFloor" :disabled="!(buildList.length&&houseList.length)">
+              </div>
+            </div>
+            <div class="item">
+              <p>户型</p>
+              <div class="in-shi" style="margin-right: 10px;">
+                <input type="text" style="width: 100px" v-model="bedRoom" :disabled="!(buildList.length&&houseList.length)">
+              </div>
+              <div class="in-ting">
+                <input type="text" style="width: 100px" v-model="livingRoom" :disabled="!(buildList.length&&houseList.length)">
+              </div>
+            </div>
+            <div class="item">
+              <p>
+                <i>*</i>面积</p>
+              <div class="in-blc">
+                <input type="text" v-model="buildArea" :disabled="!(buildList.length&&houseList.length)">
+              </div>
+            </div>
+            <div class="item">
+              <p>
+                <i>*</i>朝向</p>
+              <select name="" id="direction" v-model="directionIndex" @change="selectContent">
+                <option value="" disabled selected>选择朝向</option>
+                <option v-for="(item,index) in directionList" :value="index" :data-value="item.value" :data-name="item.name">{{item.name}}</option>
+              </select>
+            </div>
+            <div class="item">
+              <p>装修</p>
+              <select name="" id="" v-model="decoration">
+                <option value="" disabled selected>装修标准</option>
+                <option v-for="item in decorationList" :value="item.value">{{item.name}}</option>
+              </select>
+            </div>
+            <div class="item">
+              <button id="isloading" @click="quickEvaluate">快速评估</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-area flexbox flex-dic-cl">
+          <div class="top-area mb-10 flexbox flex-dic-cl">
+            <div class="search-body flexbox flex-dic-cl flex-item " v-if="evaluateResult.geographyAreaId">
+              <div class="title-area">
+                <div class="title flexbox flex-al-tc ">{{cityKeyword}}</div>
+                <div class="other-info flexbox">
+                  <div class="item">{{buildRoom}}</div>
+                  <div class="item">
+                    <i>建筑面积：</i>{{buildArea}}
+                  </div>
+                  <div class="item">
+                    <i>朝向</i>{{directionName}}
+                  </div>
+                  <div class="item">
+                    <i>楼层：</i>{{floor}} / {{maxFloor}}层
+                  </div>
+                </div>
+              </div>
+              <div class="content-area flex-item flexbox">
+                <div class="item flex-item flexbox flex-dic-cl flex-jc-tc" style="padding-left: 64px;">
+                  <p>本小区近一年成交
+                    <i>{{evaluateResult.gardenTransactionCount}}</i>套</p>
+                  <i>
+                    <strong>{{(evaluateResult.totalPrice/10000).toFixed(2)}}</strong>万元</i>
+                </div>
+                <div class="item flex-item flexbox flex-dic-cl flex-jc-tc">
+
+                  <p>比同片区均价
+                    <i>{{evaluateResult.ratioOfGeographyArea>0?'↑':'↓'}}{{Math.abs(evaluateResult.ratioOfGeographyArea)}}</i>
+                  </p>
+                  <i>
+                    <strong>{{evaluateResult.unitPrice}}</strong>元/m²</i>
+                </div>
+              </div>
+            </div>
+            <div class="no-search flexbox flex-dic-cl flex-item flex-al-tc flex-jc-between " v-if="!evaluateResult.geographyAreaId">
+              <h3>估计结果</h3>
+              <img src="./no-search.png" alt="">
+              <p>填写信息，快来算算吧</p>
+            </div>
+          </div>
+          <div class="bottom-area flex-item flexbox flex-dic-cl">
+            <div class="title flexbox flex-al-tc">税费计算</div>
+            <div class="content flex-item">
+              <div class="search-require flexbox">
+                <select name="" id="" v-model="ownerType" v-model="ownerType">
+                  <option value="" disabled selected>权利人类型</option>
+                  <option value="1">个人</option>
+                </select>
+                <select name="" id="" v-model="propertyType">
+                  <option value="" disabled selected>房屋用途</option>
+                  <option value="1">个人</option>
+                </select>
+                <select name="" id="" v-model="term">
+                  <option value="" disabled selected>是否满2年</option>
+                  <option value="1">未满两年</option>
+                  <option value="2">满两年</option>
+                  <option value="3">满5年</option>
+                </select>
+                <select name="" id="" v-model="taxType">
+                  <option value="" disabled selected>个税计算方式</option>
+                  <option value="1">核定</option>
+                  <option value="2">核实</option>
+                </select>
+                <input type="text" placeholder="原登记价" v-model="registerPrice">
+                <button :disabled="!(evaluateResult.geographyAreaId&&isCount)" @click="houseTaxCount">计算</button>
+                <!-- <button @click="houseTaxCount">计算</button> -->
+              </div>
+              <div class="total flex-item flexbox">
+                <div class="flex-item flexbox flex-al-tc flex-jc-tc">
+                  <p>预征税费合计</p>
+                  <i>
+                    <strong>{{preTax}}</strong>元</i>
+                </div>
+                <div class="flex-item flexbox flex-al-tc flex-jc-tc">
+                  <p>预计抵押净值</p>
+                  <i>
+                    <strong>{{(expectedMortgage==0)?'':(expectedMortgage/10000).toFixed(2) }}</strong>万元</i>
+                </div>
+              </div>
+              <table id="" width="100%" border="0" cellpadding="0" cellspacing="0" class="result">
+                <tbody>
+                  <tr>
+                    <td>
+                      <p>增值税</p>
+                      <div class="value">{{houseTaxList.extraTax}}</div>
+                    </td>
+                    <td>
+                      <p>城建及教育附加</p>
+                      <div class="value">{{houseTaxList.buildAndEducationTax}}</div>
+                    </td>
+                    <td>
+                      <p>契税</p>
+                      <div class="value">{{houseTaxList.contractTax}}</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <p>贴花税</p>
+                      <div class="value">{{houseTaxList.tieHuaAmount}}</div>
+                    </td>
+                    <td>
+                      <p>个人/企业所得税</p>
+                      <div class="value">{{houseTaxList.personalTax}}</div>
+                    </td>
+                    <td>
+                      <p>土地增值税</p>
+                      <div class="value">{{preTax?'免征':''}}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <section class="echarts-body flexbox flex-dic-cl">
+        <div class="title flexbox flex-al-tc flex-jc-between">
+          <p>房价走势</p>
+          <p>{{trendList.startMonth}}{{trendList.startMonth?'~':''}}{{trendList.endMonth}}</p>
+        </div>
+        <div class="echarts flex-item" id="echarts"></div>
+      </section>
+    </section>
+  </article>
+  <script type="text/javascript" src="./jQuery.js"></script>
+  <script type="text/javascript" src="./toast.js"></script>
+  <script type="text/javascript" src="./echarts.min.js"></script>
+  <!-- <script type="text/javascript" src="./rapid-assessment.js"></script> -->
+  <script>
+    $(function () {
+      var data = {
+        cityId: '', // 城市ID
+        cityName: '', // 城市名
+        cityFullpinyin: '', // 城市全拼
+        cityKeyword: '', // 城市搜索关键字
+        gardenId: '', // 楼盘id
+        buildingId: '', // 楼栋单元id
+
+        gardenIndex: '', // 楼层index
+        houseIndex: '', // 房间index
+        roomId: '', // 房间id
+        roomNumber: '', //房号
+        floor: '', //楼层,
+        maxFloor: '', //最高楼层,
+        bedRoom: '', //几室,
+        livingRoom: '', //几厅,
+        buildArea: '', // 面积,
+        direction: '', // 朝向,
+        decoration: '', //装修
+
+        gardenList: [],
+        buildList: [],
+        houseList: [],
+        directionList: [],
+        decorationList: [],
+
+        // geographyAreaId: '', // 片区id,
+        preXMonth: '12', // 向前推多少个月的数据
+
+        // 房间价格评估
+        propertyType: '',
+        ownerType: '',
+        registerPrice: '',
+        taxType: '',
+        term: '',
+
+        evaluateResult: {
+          totalPrice: '', //总价，保留2位小数,
+          unitPrice: '', //单价，整数,
+          geographyAreaId: '', //片区ID,
+          ratioOfGeographyArea: '', //比同片区均价的比例，保留2位小数,
+          gardenTransactionCount: '', //本小区近一年成交套数，整数
+        },
+
+        // 房价趋势  echarts 的数据
+        trendList: {
+          nameList: [], //['深圳', '南头', '中山意晶花园'], //[深圳,片区,楼盘],
+          monthList: [], //['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'], //
+          cityList: [], //[150, 232, 201, 154, 190, 330, 410, 150, 232, 201, 154, 190, ], //
+          geographyAreaList: [], //[320, 332, 301, 334, 390, 330, 320, 320, 332, 301, 334, 390], //区域
+          gardenList: [], //[820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290], //楼盘
+          startMonth: '', //'2017年01月', //开始月份,
+          endMonth: '', //'2017年12月', //结束月份
+        },
+
+        // 税费查询
+        houseTaxList: {
+          extraTax: '',
+          personalTax: '',
+          contractTax: '',
+          tieHuaAmount: '',
+          registerAmount: '',
+          buildAndEducationTax: ''
+        },
+
+        isCount: true,
+        directionIndex: '',
+        directionName: '',
+        buildRoom: '',
+      }
+
+      var vm = new Vue({
+        el: '#vm',
+        data: data,
+        computed: {
+          // 计算属性的 getter
+          preTax: function () {
+            var number = +this.houseTaxList.extraTax + +this.houseTaxList.buildAndEducationTax + +this.houseTaxList
+              .contractTax +
+              +this.houseTaxList.tieHuaAmount + +this.houseTaxList.personalTax;
+            number = Number(number)
+            if (!isNaN(parseFloat(number))) {
+              number = number.toFixed(2);
+            }
+            return number == 0 ? '' : number;
+
+
+          },
+          expectedMortgage: function () {
+            return this.preTax ? ((+this.evaluateResult.totalPrice - this.preTax) || '') : ''
+          }
+        },
+        mounted() {
+          this.initCity();
+          this.initDirectionList();
+          this.initDecorationList();
+          this.renderCompanyLineChart('echarts', this.trendList);
+
+          // this.quickEvaluate();
+
+          // this.evaluateRoom();
+          // this.trend();
+
+        },
+        methods: {
+          // echarts
+          renderCompanyLineChart(name, echartsRequestData) {
+            var option = {
+              tooltip: {
+                trigger: 'axis'
+              },
+              legend: {
+                data: echartsRequestData.nameList || '',
+                bottom: '0%',
+              },
+
+              grid: {
+                top: '8%',
+                left: '3%',
+                right: '4%',
+                bottom: '12%',
+                containLabel: true
+              },
+              // toolbox: {
+              //   feature: {
+              //     saveAsImage: {}
+              //   }
+              // },
+              //加单位
+              tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                  var relVal = params[0].name;
+                  for (var i = 0, l = params.length; i < l; i++) {
+                    relVal += '<br/>' + params[i].seriesName + ' : ' + params[i].value + "元";
+                  }
+                  return relVal;
+                }
+              },
+              xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: echartsRequestData.monthList || ''
+              },
+              yAxis: {
+                type: 'value'
+              },
+              series: [
+
+                {
+                  name: echartsRequestData.nameList[0] || '',
+                  type: 'line',
+                  // smooth: true,
+                  data: echartsRequestData.cityList || '',
+
+                },
+                {
+                  name: echartsRequestData.nameList[1] || '',
+                  type: 'line',
+                  // smooth: true,
+                  data: echartsRequestData.geographyAreaList || ''
+                },
+                {
+                  name: echartsRequestData.nameList[2] || '',
+                  type: 'line',
+                  // smooth: true,
+                  data: echartsRequestData.gardenList || ''
+                }
+              ]
+            };
+            var myChart = echarts.init(document.getElementById(name));
+            myChart.setOption(option);
+          },
+          //城市接口
+          initCity() {
+
+            this.ajax('/qfang-dictionary/assess/city/authorizedCityList.json', null, function (res) {
+              console.log('initCity', res);
+              console.log(vm)
+              if (res.data && res.data.cityList) {
+                vm.$set(vm, 'cityId', res.data.cityList[0].id);
+                vm.$set(vm, 'cityName', res.data.cityList[0].name);
+                vm.$set(vm, 'cityFullpinyin', res.data.cityList[0].fullpinyin);
+              }
+            });
+          },
+          // 朝向接口
+          initDirectionList() {
+            this.ajax('/qfang-dictionary/enum/directionList.json', null, function (res) {
+              if (res.data && res.data.directionList) {
+                vm.$set(vm, 'directionList', res.data.directionList);
+              }
+            });
+          },
+          // 装修接口
+          initDecorationList() {
+            this.ajax('/qfang-dictionary/enum/decorationList.json', null, function (res) {
+              if (res.data && res.data.decorationList) {
+                vm.$set(vm, 'decorationList', res.data.decorationList);
+              }
+            });
+          },
+
+          // 小区接口
+          selectGardenList(val) {
+            var data = {
+              _city: this.cityFullpinyin,
+              cityId: this.cityId,
+              keyword: this.cityKeyword
+            }
+            this.ajax('/qfang-dictionary/gardenManager/gardenList.json', data, function (res) {
+              if (res.data && res.data.gardenList) {
+                vm.$set(vm, 'buildList', []);
+                vm.$set(vm, 'houseList', []);
+                vm.$set(vm, 'gardenIndex', '');
+                vm.initData();
+                vm.$set(vm, 'gardenList', res.data.gardenList);
+              }
+            });
+          },
+          // 楼栋接口
+          buildingList(val) {
+
+            // console.log($(val.target))
+            // console.log($(val.target).attr('data-id'))
+            this.gardenId = $(val.target).attr('data-id');
+            this.cityKeyword = $(val.target).text();
+            this.gardenList = [];
+
+            var data = {
+              _city: this.cityFullpinyin,
+              gardenId: this.gardenId,
+            }
+            this.ajax('/qfang-dictionary/gardenManager/building/buildingList.json', data, function (res) {
+              vm.initData();
+              vm.initOtherData();
+              if (res.data && res.data.buildingList) {
+                vm.$set(vm, 'buildList', res.data.buildingList);
+              }
+            });
+          },
+          // 房号接口
+          roomList(val) {
+            vm.initData();
+            var index = +this.gardenIndex + 1;
+            this.buildingId = $(val.target).find('option').eq(index).attr('data-id');
+            var data = {
+              _city: this.cityFullpinyin,
+              buildingId: this.buildingId,
+            }
+            this.ajax('/qfang-dictionary/gardenManager/room/roomList.json', data, function (res) {
+              if (res.data && res.data.roomList) {
+                vm.$set(vm, 'houseList', res.data.roomList);
+              }
+            });
+          },
+
+          // 清空数据
+          initData() {
+            this.houseIndex = '';
+            this.roomId = '';
+            this.roomNumber = '';
+            this.floor = '';
+            this.maxFloor = '';
+            this.bedRoom = '';
+            this.livingRoom = '';
+            this.buildArea = '';
+            this.direction = '';
+            this.decoration = '';
+          },
+
+          // 清空其他数据
+          initOtherData() {
+            this.propertyType = '';
+            this.ownerType = '';
+            this.registerPrice = '';
+            this.taxType = '';
+            this.term = '';
+            this.evaluateResult = {
+              totalPrice: '',
+              unitPrice: '',
+              geographyAreaId: '',
+              ratioOfGeographyArea: '',
+              gardenTransactionCount: '',
+            };
+            this.houseTaxList = {
+              extraTax: '',
+              personalTax: '',
+              contractTax: '',
+              tieHuaAmount: '',
+              registerAmount: '',
+              buildAndEducationTax: ''
+            }
+            this.trendList = {
+              nameList: [],
+              monthList: [],
+              cityList: [],
+              geographyAreaList: [],
+              gardenList: [],
+              startMonth: '',
+              endMonth: '',
+            };
+
+            this.renderCompanyLineChart('echarts', this.trendList);
+          },
+
+          // 默认数据渲染
+
+          defaultList(val) {
+            var index = this.houseIndex + 1;
+            console.log($(val.target).find('option').eq(index))
+            this.roomId = $(val.target).find('option').eq(index).attr('data-id');
+            this.roomNumber = $(val.target).find('option').eq(index).attr('data-roomNumber');
+            this.floor = $(val.target).find('option').eq(index).attr('data-floor');
+            this.maxFloor = $(val.target).find('option').eq(index).attr('data-maxFloor');
+            this.bedRoom = $(val.target).find('option').eq(index).attr('data-bedRoom');
+            this.livingRoom = $(val.target).find('option').eq(index).attr('data-livingRoom');
+            this.buildArea = $(val.target).find('option').eq(index).attr('data-buildArea');
+            this.direction = $(val.target).find('option').eq(index).attr('data-direction');
+            this.directionIndex = $('#direction').find('option[data-value=' + this.direction + ']').val();
+            this.directionName = $('#direction').find('option[data-value=' + this.direction + ']').attr(
+              'data-name');
+            this.decoration = $(val.target).find('option').eq(index).attr('data-decoration');
+
+          },
+
+
+          // 对外税费查询接口
+          houseTaxCount(val) {
+            this.isCount = false;
+
+            var data = {
+              propertyType: this.propertyType,
+              ownerType: this.ownerType,
+              area: this.buildArea,
+              price: this.evaluateResult.unitPrice,
+              registerPrice: this.registerPrice,
+              taxType: this.taxType,
+              term: this.term,
+            }
+            if (!(this.propertyType !== '')) {
+              this.isCount = true;
+              this.show('房号不能为空');
+              return
+            }
+            if (!this.ownerType) {
+              this.isCount = true;
+              this.show('楼层不能为空');
+              return
+            }
+            if (!this.registerPrice) {
+              this.isCount = true;
+              this.show('楼层不能为空');
+              return
+            }
+            if (!this.taxType) {
+              this.isCount = true;
+              this.show('面积不能为空');
+              return
+            }
+            if (!this.term) {
+              this.isCount = true;
+              this.show('朝向不能为空');
+              return
+            }
+            this.ajax('/qfang-dictionary/assess/quickEvaluate/calTax.json', data, function (res) {
+              console.log('calTax', res);
+              vm.$set(vm, 'isCount', true);
+
+              if (res && res.data) {
+                vm.$set(vm, 'houseTaxList', res.data.taxResult);
+              }
+            });
+
+          },
+          quickEvaluate(val) {
+            $('#isloading').attr('disabled', true);
+            if (!this.cityKeyword) {
+              $('#isloading').removeAttr('disabled');
+              this.show('小区不能为空');
+              return
+            }
+            if (!(this.gardenIndex !== '')) {
+              $('#isloading').removeAttr('disabled');
+              this.show('楼栋不能为空');
+              return
+            }
+            if (!(this.houseIndex !== '')) {
+              $('#isloading').removeAttr('disabled');
+              this.show('房号不能为空');
+              return
+            }
+            if (!this.floor) {
+              $('#isloading').removeAttr('disabled');
+              this.show('楼层不能为空');
+              return
+            }
+            if (!this.maxFloor) {
+              $('#isloading').removeAttr('disabled');
+              this.show('楼层不能为空');
+              return
+            }
+            if (!this.buildArea) {
+              $('#isloading').removeAttr('disabled');
+              this.show('面积不能为空');
+              return
+            }
+            if (!this.direction) {
+              $('#isloading').removeAttr('disabled');
+              this.show('朝向不能为空');
+              return
+            }
+            this.buildRoom = $('#gardenName').find('option').eq(+$('#gardenName').val() + 1).text() +
+              $('#houseName').find('option').eq(+$('#houseName').val() + 1).text();
+
+
+            var data = {
+              _city: this.cityFullpinyin,
+              gardenId: this.gardenId,
+              floor: this.floor,
+              maxFloor: this.maxFloor,
+              buildArea: this.buildArea,
+              direction: this.direction,
+              decoration: this.decoration,
+            };
+            var someData = {};
+            var that = this;
+            that.ajaxPromise('/qfang-dictionary/assess/evaluate/evaluateRoom.json', data, function (resp) {
+              //do something on response
+              // console.log('evaluateRoom1', resp);
+              if (resp && resp.data && resp.data.evaluateResult) {
+                that.evaluateResult = resp.data.evaluateResult;
+              }
+
+              someData = {
+                _city: that.cityFullpinyin,
+                cityId: that.cityId,
+                geographyAreaId: that.evaluateResult.geographyAreaId,
+                gardenId: that.gardenId,
+                preXMonth: that.preXMonth //向前推多少个月的数据
+              };
+              // console.log(someData)
+            }).then(
+              function (params) {
+                if (params) {
+                  // 房价趋势接口
+                  that.ajaxPromise('/qfang-dictionary/assess/priceTrend/trend.json', someData,
+                    function (resp) {
+                      // console.log('trend', resp)
+                      if (resp.data && resp.data.trendList) {
+                        that.trendList = resp.data.trendList;
+                        that.renderCompanyLineChart('echarts', that.trendList);
+                      }
+                      $('#isloading').removeAttr('disabled');
+                    })
+                }
+                $('#isloading').removeAttr('disabled');
+              }
+            ).catch(
+              function (err) {
+                $('#isloading').removeAttr('disabled');
+                that.show(err);
+              }
+            )
+          },
+
+          ajax(url, data, callback) {
+            var that = this;
+            $.ajax({
+              url: url,
+              type: data == null ? 'GET' : 'POST',
+              dataType: "json",
+              data: data == null ? '' : JSON.parse(JSON.stringify(data)),
+              async: true,
+              // contentType: "application/json",
+              success: function (resp) {
+                if (resp && resp.status) {
+                  that.show(resp.errors[0].errorDesc);
+                }
+                callback(resp);
+              },
+              error: function (XMLHttpRequest, textStatus, errorThrown) {
+                that.show('服务器出问题');
+                that.isCount = true;
+              }
+            });
+          },
+
+          ajaxPromise(url, data, callback) {
+            var that = this;
+            var p = new Promise(function (resolve, reject) {
+              $.ajax({
+                url: url,
+                type: data == null ? 'GET' : 'POST',
+                dataType: "json",
+                data: data == null ? '' : JSON.parse(JSON.stringify(data)),
+                async: false,
+                // contentType: "application/json",
+                success: function (resp) {
+                  callback(resp);
+                  if (resp && resp.status) {
+                    that.show(resp.errors[0].errorDesc);
+                    resolve(false);
+                  } else {
+                    resolve(true);
+                  }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                  console.log(XMLHttpRequest);
+                  reject(false);
+                  that.show('服务器出问题');
+                }
+              });
+            });
+            return p;
+          },
+
+
+          show(content, duration, isCenter, animateIn, animateOut) {
+            var animateIn = animateIn || 'fadeIn';
+            var animateOut = animateOut || 'fadeOut';
+            if (!content || !content.length) {
+              return;
+            }
+            var duration = duration || 1000;
+            var isCenter = isCenter || false;
+            $('body').toast({
+              position: 'absolute',
+              animateIn: animateIn,
+              animateOut: animateOut,
+              content: content,
+              duration: duration,
+              isCenter: isCenter,
+              padding: '0.2em 0.5em',
+              background: 'rgba(181, 185, 190, 0.8)',
+              borderRadius: '.31em',
+              fontSize: '.24em',
+              top: '0',
+            });
+          },
+
+          selectContent(val) {
+            var index = +this.directionIndex + 1;
+            this.direction = $(val.target).find('option').eq(index).attr('data-value');
+            console.log($(val.target).find('option').eq(index).attr('data-name'))
+            this.directionName = $(val.target).find('option').eq(index).attr('data-name');
+          }
+        },
+
+      });
+
+      // $('#isloading').on('click', function (e) {
+      //   e.stopPropagation();
+      //   e.preventDefault();
+      //   $(this).attr('disabled', true)
+      // });
+    });
+  </script>
+  <script>
+  </script>
+</body>
+
+</html>
