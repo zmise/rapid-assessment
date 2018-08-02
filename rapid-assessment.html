@@ -33,11 +33,11 @@
 
 <body>
   <article class="article-body flexbox flex-dic-cl flex-jc-tc flex-al-tc ">
-    <section id="vm" action="#" v-cloak>
+    <section id="vm" action="#" v-cloak class="vm">
       <div class="input-body flexbox mb-10">
         <div class="left-area mr-10 flexbox flex-dic-cl">
           <div class="title flexbox flex-al-tc">房价评估</div>
-          <div class="content flexbox flex-dic-cl">
+          <div class="content flexbox flex-dic-cl flex-item">
             <div class="item">
               <p>
                 <i>*</i>小区</p>
@@ -51,7 +51,8 @@
             <div class="item">
               <p>
                 <i>*</i>楼栋</p>
-              <select name="" id="gardenName" v-model="gardenIndex" @change="roomList" :disabled="!buildList.length">
+              <select name="" id="gardenName" v-model="gardenIndex" @change="roomList" :disabled="!buildList.length" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100"
+                onblur="this.size=0;this.style.zIndex=1" onchange="this.size=0">
                 <option value="" disabled selected>选择楼栋</option>
                 <option v-for="(item,index) in buildList" :value="index" :data-id="item.id">{{item.name}}</option>
 
@@ -60,7 +61,9 @@
             <div class="item">
               <p>
                 <i>*</i>房号</p>
-              <select name="" id="houseName" v-model="houseIndex" @change="defaultList" :disabled="!(buildList.length&&houseList.length)">
+              <select name="" id="houseName" v-model="houseIndex" @change="defaultList" :disabled="!(buildList.length&&houseList.length)"
+                onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100" onblur="this.size=0;this.style.zIndex=1"
+                onchange="this.size=0">
                 <option value="" disabled selected>选择房号</option>
                 <option v-for="(item,index) in houseList" :value="index" :data-id="item.id" :data-roomNumber="item.roomNumber" :data-maxFloor="item.maxFloor"
                   :data-floor="item.floor" :data-bedRoom="item.bedRoom" :data-livingRoom="item.livingRoom" :data-buildArea="item.buildArea"
@@ -70,41 +73,52 @@
             <div class="item">
               <p>
                 <i>*</i>楼层</p>
-              <div class="in-ceng" style="margin-right: 10px;">
-                <input type="text" style="width: 100px" v-model="floor" :disabled="!(buildList.length&&houseList.length)">
+              <div class="in-ceng" style="margin-right: 3.66%; width: 36.6%;">
+                <input type="text" style="width: 100%" v-model="floor" :disabled="!(buildList.length&&houseList.length)">
               </div>
-              <div class="in-ceng total-ceng">
-                <input type="text" style="width: 100px" v-model="maxFloor" :disabled="!(buildList.length&&houseList.length)">
+              <div class="in-ceng total-ceng" style="width: 36.6%;">
+                <input type="text" style="width: 100%" v-model="maxFloor" :disabled="!(buildList.length&&houseList.length)">
               </div>
             </div>
             <div class="item">
               <p>户型</p>
-              <div class="in-shi" style="margin-right: 10px;">
-                <input type="text" style="width: 100px" v-model="bedRoom" :disabled="!(buildList.length&&houseList.length)">
+              <div class="in-shi" style="margin-right: 3.66%; width: 36.6%;">
+                <input type="text" style="width: 100%" v-model="bedRoom" :disabled="!(buildList.length&&houseList.length)">
               </div>
-              <div class="in-ting">
-                <input type="text" style="width: 100px" v-model="livingRoom" :disabled="!(buildList.length&&houseList.length)">
+              <div class="in-ting" style="width: 36.6%;">
+                <input type="text" style="width: 100%" v-model="livingRoom" :disabled="!(buildList.length&&houseList.length)">
               </div>
             </div>
             <div class="item">
               <p>
                 <i>*</i>面积</p>
               <div class="in-blc">
-                <input type="text" v-model="buildArea" :disabled="!(buildList.length&&houseList.length)">
+                <input type="text" style="width: 100%;" v-model="buildArea" :disabled="!(buildList.length&&houseList.length)">
               </div>
             </div>
             <div class="item">
               <p>
                 <i>*</i>朝向</p>
-              <select name="" id="direction" v-model="directionIndex" @change="selectContent">
+              <select name="" id="direction" v-model="directionIndex" @change="selectContent" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100"
+                onblur="this.size=0;this.style.zIndex=1" onchange="this.size=0">
                 <option value="" disabled selected>选择朝向</option>
+
                 <option v-for="(item,index) in directionList" :value="index" :data-value="item.value" :data-name="item.name">{{item.name}}</option>
               </select>
             </div>
             <div class="item">
               <p>装修</p>
-              <select name="" id="" v-model="decoration">
-                <option value="" disabled selected>装修标准</option>
+              <select name="" id="" v-model="decoration" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100" onblur="this.size=0;this.style.zIndex=1"
+                onchange="this.size=0">
+                <option value="" disabled>装修标准</option>
+                <!-- <template v-for="item in decorationList">
+                  <option :value="item.value" v-if="item.value == 'SIMPLE'">
+                    {{item.name}}
+                  </option>
+                  <option :value="item.value" v-else>
+                    {{item.name}}
+                  </option>
+                </template> -->
                 <option v-for="item in decorationList" :value="item.value">{{item.name}}</option>
               </select>
             </div>
@@ -114,7 +128,7 @@
           </div>
         </div>
 
-        <div class="right-area flexbox flex-dic-cl">
+        <div class="right-area flexbox flex-dic-cl flex-item">
           <div class="top-area mb-10 flexbox flex-dic-cl">
             <div class="search-body flexbox flex-dic-cl flex-item " v-if="evaluateResult.geographyAreaId">
               <div class="title-area">
@@ -159,21 +173,25 @@
             <div class="title flexbox flex-al-tc">税费计算</div>
             <div class="content flex-item">
               <div class="search-require flexbox">
-                <select name="" id="" v-model="ownerType" v-model="ownerType">
+                <select name="" id="" v-model="ownerType" v-model="ownerType" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100"
+                  onblur="this.size=0;this.style.zIndex=1" onchange="this.size=0">
                   <option value="" disabled selected>权利人类型</option>
                   <option value="1">个人</option>
                 </select>
-                <select name="" id="" v-model="propertyType">
+                <select name="" id="" v-model="propertyType" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100"
+                  onblur="this.size=0;this.style.zIndex=1" onchange="this.size=0">
                   <option value="" disabled selected>房屋用途</option>
                   <option value="1">个人</option>
                 </select>
-                <select name="" id="" v-model="term">
+                <select name="" id="" v-model="term" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100" onblur="this.size=0;this.style.zIndex=1"
+                  onchange="this.size=0">
                   <option value="" disabled selected>是否满2年</option>
                   <option value="1">未满两年</option>
                   <option value="2">满两年</option>
                   <option value="3">满5年</option>
                 </select>
-                <select name="" id="" v-model="taxType">
+                <select name="" id="" v-model="taxType" onmousedown="if(this.options.length>14){this.size=15};this.style.zIndex=100" onblur="this.size=0;this.style.zIndex=1"
+                  onchange="this.size=0">
                   <option value="" disabled selected>个税计算方式</option>
                   <option value="1">核定</option>
                   <option value="2">核实</option>
@@ -265,7 +283,7 @@
         livingRoom: '', //几厅,
         buildArea: '', // 面积,
         direction: '', // 朝向,
-        decoration: '', //装修
+        decoration: 'SIMPLE', //装修
 
         gardenList: [],
         buildList: [],
@@ -344,8 +362,6 @@
           this.initDirectionList();
           this.initDecorationList();
           this.renderCompanyLineChart('echarts', this.trendList);
-
-          // this.quickEvaluate();
 
           // this.evaluateRoom();
           // this.trend();
@@ -442,7 +458,18 @@
             });
           },
           // 装修接口
-          initDecorationList() {
+          initDecorationList(val) {
+            this.decorationList = [{
+              name: "豪华装修",
+              value: "LUXURY"
+            }, {
+              name: "精致装修",
+              value: "HARDCOVER"
+            }, {
+              name: "普通装修",
+              value: "SIMPLE"
+            }];
+
             this.ajax('/qfang-dictionary/enum/decorationList.json', null, function (res) {
               if (res.data && res.data.decorationList) {
                 vm.$set(vm, 'decorationList', res.data.decorationList);
@@ -515,7 +542,7 @@
             this.livingRoom = '';
             this.buildArea = '';
             this.direction = '';
-            this.decoration = '';
+            // this.decoration = '';
           },
 
           // 清空其他数据
@@ -569,7 +596,7 @@
             this.directionIndex = $('#direction').find('option[data-value=' + this.direction + ']').val();
             this.directionName = $('#direction').find('option[data-value=' + this.direction + ']').attr(
               'data-name');
-            this.decoration = $(val.target).find('option').eq(index).attr('data-decoration');
+            // this.decoration = $(val.target).find('option').eq(index).attr('data-decoration');
 
           },
 
@@ -670,7 +697,7 @@
               maxFloor: this.maxFloor,
               buildArea: this.buildArea,
               direction: this.direction,
-              decoration: this.decoration,
+              decoration: this.decoration || 'SIMPLE',
             };
             var someData = {};
             var that = this;
