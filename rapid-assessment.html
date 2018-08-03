@@ -130,7 +130,7 @@
 
         <div class="right-area flexbox flex-dic-cl flex-item">
           <div class="top-area mb-10 flexbox flex-dic-cl">
-            <div class="search-body flexbox flex-dic-cl flex-item " v-if="evaluateResult.geographyAreaId">
+            <div class="search-body flexbox flex-dic-cl flex-item " v-if="!evaluateResult.geographyAreaId">
               <div class="title-area">
                 <div class="title flexbox flex-al-tc ">{{cityKeyword}}</div>
                 <div class="other-info flexbox">
@@ -163,7 +163,7 @@
                 </div>
               </div>
             </div>
-            <div class="no-search flexbox flex-dic-cl flex-item flex-al-tc flex-jc-between " v-if="!evaluateResult.geographyAreaId">
+            <div class="no-search flexbox flex-dic-cl flex-item flex-al-tc flex-jc-between " v-if="evaluateResult.geographyAreaId">
               <h3>估计结果</h3>
               <img src="./no-search.png" alt="">
               <p>填写信息，快来算算吧</p>
@@ -609,7 +609,7 @@
               propertyType: this.propertyType,
               ownerType: this.ownerType,
               area: this.buildArea,
-              price: this.evaluateResult.unitPrice,
+              price: this.evaluateResult.gardenTransactionCount,
               registerPrice: this.registerPrice,
               taxType: this.taxType,
               term: this.term,
