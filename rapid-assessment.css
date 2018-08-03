@@ -400,23 +400,25 @@ body {
 
 .top-area .title-area {
   color: #333;
-  height: 55px;
+  height: 37.3%;
   background-color: #f9f9f9;
   border-bottom: 1px solid #e5e5e5;
 }
 
 .top-area .title {
   border-left: 3px solid #3077ad;
-  padding-left: 18px;
+  padding-left: 2.88%;
   border-bottom: 0;
+  height: 63.54%;
+
 }
 
 .top-area .other-info {
-  padding-left: 20px;
+  padding-left: 3.2%;
 }
 
 .top-area .other-info .item {
-  margin-right: 50px;
+  margin-right: 8%;
   white-space: nowrap;
 }
 
