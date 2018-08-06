@@ -269,11 +269,11 @@
         cityId: '', // 城市ID
         cityName: '', // 城市名
         cityFullpinyin: '', // 城市全拼
-        cityKeyword: '', // 城市搜索关键字
+        cityKeyword: '', // 城市搜索关键字 楼盘名称
         gardenId: '', // 楼盘id
         buildingId: '', // 楼栋单元id
 
-        gardenIndex: '', // 楼层index
+        gardenIndex: '', // 楼层index 楼栋名称
         houseIndex: '', // 房间index
         roomId: '', // 房间id
         roomNumber: '', //房号
@@ -686,6 +686,11 @@
               this.show('朝向不能为空');
               return
             }
+            if (!this.decoration) {
+              $('#isloading').removeAttr('disabled');
+              this.show('装修不能为空');
+              return
+            }
             this.buildRoom = $('#gardenName').find('option').eq(+$('#gardenName').val() + 1).text() +
               $('#houseName').find('option').eq(+$('#houseName').val() + 1).text();
 
@@ -698,6 +703,15 @@
               buildArea: this.buildArea,
               direction: this.direction,
               decoration: this.decoration || 'SIMPLE',
+              //新增参数
+              buildingId: this.buildingId, // 楼栋id,
+              buildingName: this.cityName, // 楼栋名称,
+              gardenName: this.cityKeyword, // 楼盘名称,
+              roomId: this.roomId, // 房间id,
+              roomNumber: this.roomNumber, // 房号,
+              bedRoom: this.bedRoom, // 几室,
+              livingRoom: this.livingRoom, // 几厅,
+
             };
             var someData = {};
             var that = this;
