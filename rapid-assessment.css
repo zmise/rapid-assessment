@@ -410,7 +410,6 @@ body {
   padding-left: 2.88%;
   border-bottom: 0;
   height: 63.54%;
-
 }
 
 .top-area .other-info {
@@ -423,7 +422,7 @@ body {
 }
 
 .top-area .no-search {
-  padding: 4.34% 0 2.17%;
+  padding: 20px 0 10px;
   background-color: #f9f9f9;
 }
 
@@ -433,8 +432,8 @@ body {
 }
 
 .top-area .no-search img {
-  height: 47.9%;
-  width: 8.8%;
+  height: 50px;
+  width: 55px;
 }
 
 .top-area .no-search p {

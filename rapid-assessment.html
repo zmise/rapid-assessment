@@ -151,7 +151,7 @@
                   <p>本小区近一年成交
                     <i>{{evaluateResult.gardenTransactionCount}}</i>套</p>
                   <i>
-                    <strong>{{(evaluateResult.totalPrice/10000).toFixed(2)}}</strong>万元</i>
+                    <strong>{{Math.round(evaluateResult.totalPrice)}}</strong>万元</i>
                 </div>
                 <div class="item flex-item flexbox flex-dic-cl flex-jc-tc">
 
@@ -159,7 +159,7 @@
                     <i>{{evaluateResult.ratioOfGeographyArea>0?'↑':'↓'}}{{Math.abs(evaluateResult.ratioOfGeographyArea)}}</i>
                   </p>
                   <i>
-                    <strong>{{evaluateResult.unitPrice}}</strong>元/m²</i>
+                    <strong>{{Math.round(evaluateResult.unitPrice)}}</strong>元/m²</i>
                 </div>
               </div>
             </div>
@@ -209,7 +209,7 @@
                 <div class="flex-item flexbox flex-al-tc flex-jc-tc">
                   <p>预计抵押净值</p>
                   <i>
-                    <strong>{{(expectedMortgage==0)?'':(expectedMortgage/10000).toFixed(2) }}</strong>万元</i>
+                    <strong>{{(expectedMortgage==0)?'':Math.round(expectedMortgage)}}</strong>万元</i>
                 </div>
               </div>
               <table id="" width="100%" border="0" cellpadding="0" cellspacing="0" class="result">
@@ -273,7 +273,8 @@
         gardenId: '', // 楼盘id
         buildingId: '', // 楼栋单元id
 
-        gardenIndex: '', // 楼层index 楼栋名称
+        buildingName: '', // 楼栋名称
+        gardenIndex: '', // 楼层index
         houseIndex: '', // 房间index
         roomId: '', // 房间id
         roomNumber: '', //房号
@@ -345,13 +346,8 @@
             var number = +this.houseTaxList.extraTax + +this.houseTaxList.buildAndEducationTax + +this.houseTaxList
               .contractTax +
               +this.houseTaxList.tieHuaAmount + +this.houseTaxList.personalTax;
-            number = Number(number)
-            if (!isNaN(parseFloat(number))) {
-              number = number.toFixed(2);
-            }
-            return number == 0 ? '' : number;
-
-
+            number = Math.round(Number(number));
+            return number === 0 ? '' : number;
           },
           expectedMortgage: function () {
             return this.preTax ? ((+this.evaluateResult.totalPrice - this.preTax) || '') : ''
@@ -694,6 +690,7 @@
             this.buildRoom = $('#gardenName').find('option').eq(+$('#gardenName').val() + 1).text() +
               $('#houseName').find('option').eq(+$('#houseName').val() + 1).text();
 
+            this.buildingName =$('#gardenName').find('option').eq(+$('#gardenName').val() + 1).text();
 
             var data = {
               _city: this.cityFullpinyin,
@@ -705,7 +702,7 @@
               decoration: this.decoration || 'SIMPLE',
               //新增参数
               buildingId: this.buildingId, // 楼栋id,
-              buildingName: this.cityName, // 楼栋名称,
+              buildingName: this.buildingName, // 楼栋名称,
               gardenName: this.cityKeyword, // 楼盘名称,
               roomId: this.roomId, // 房间id,
               roomNumber: this.roomNumber, // 房号,
