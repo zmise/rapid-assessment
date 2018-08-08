@@ -77,7 +77,7 @@
                 <input type="text" style="width: 100%" v-model="floor" :disabled="!(buildList.length&&houseList.length)" @keyup="integerRgx($event,1)">
               </div>
               <div class="in-ceng total-ceng" style="width: 36.6%;">
-                <input type="text" style="width: 100%" v-model="maxFloor" :disabled="!(buildList.length&&houseList.length)" @keyup="numRgx($event,2)">
+                <input type="text" style="width: 100%" v-model="maxFloor" :disabled="!(buildList.length&&houseList.length)" @keyup="integerRgx($event,2)">
               </div>
             </div>
             <div class="item">
@@ -487,6 +487,7 @@
                 vm.$set(vm, 'gardenIndex', '');
                 vm.initData();
                 vm.initOtherData();
+                vm.initEchartsData();
 
                 vm.$set(vm, 'gardenList', res.data.gardenList);
               }
@@ -565,6 +566,10 @@
               registerAmount: '',
               buildAndEducationTax: ''
             }
+
+          },
+          // 清空echarts数据
+          initEchartsData() {
             this.trendList = {
               nameList: [],
               monthList: [],
@@ -577,7 +582,6 @@
 
             this.renderCompanyLineChart('echarts', this.trendList);
           },
-
           // 默认数据渲染
 
           defaultList(val) {
@@ -591,9 +595,12 @@
             this.livingRoom = $(val.target).find('option').eq(index).attr('data-livingRoom');
             this.buildArea = $(val.target).find('option').eq(index).attr('data-buildArea');
             this.direction = $(val.target).find('option').eq(index).attr('data-direction');
-            this.directionIndex = $('#direction').find('option[data-value=' + this.direction + ']').val();
-            this.directionName = $('#direction').find('option[data-value=' + this.direction + ']').attr(
-              'data-name');
+            if (this.direction !== '') {
+              this.directionIndex = $('#direction').find('option[data-value=' + this.direction + ']').val();
+              this.directionName = $('#direction').find('option[data-value=' + this.direction + ']').attr(
+                'data-name');
+            }
+
             // this.decoration = $(val.target).find('option').eq(index).attr('data-decoration');
             this.initOtherData();
           },
@@ -839,12 +846,12 @@
           floatRgx(event, index) {
             event.target.value = event.target.value.replace(/[^\d.]/g, ""); //清除"数字"和"."以外的字符
             event.target.value = event.target.value.replace(/^\./g, ""); //验证第一个字符是数字
-            // event.target.value = event.target.value.replace(/\.{2,}/g, "."); //只保留第一个, 清除多余的
-            // event.target.value = event.target.value.replace(/\-{2,}/g, "-"); //只保留第一个, 清除多余的
-            event.target.value = event.target.value.replace(/^\d\./, "");
-            // event.target.value = event.target.value.replace(/^\-\./, "");
+            event.target.value = event.target.value.replace(/\.{2,}/g, "."); //只保留第一个, 清除多余的
+            event.target.value = event.target.value.replace(/\-{2,}/g, "-"); //只保留第一个, 清除多余的
+            event.target.value = event.target.value.replace(/^\d\.\-/, "");
+            event.target.value = event.target.value.replace(/^\-\./, "");
             event.target.value = event.target.value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
-            // event.target.value = event.target.value.replace("-", "$#$").replace(/\-/g, "").replace("$#$", "-");
+            event.target.value = event.target.value.replace("-", "$#$").replace(/\-/g, "").replace("$#$", "-");
             event.target.value = event.target.value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3'); //只能输入两个小数
             this.initOtherData();
             this.propsChange(index, event.target.value);
@@ -853,10 +860,11 @@
           // 正整数
           numRgx(event, index) {
             if (event.target.value.length == 1) {
-              event.target.value = event.target.value.replace(/[^1-9]/g, '')
+              event.target.value = event.target.value.replace(/[^0-9]/g, '')
             } else {
               event.target.value = event.target.value.replace(/\D/g, '')
             }
+
             this.initOtherData();
             this.propsChange(index, event.target.value);
           },
@@ -864,6 +872,16 @@
           integerRgx(event, index) {
             if (event.target.value.length % 1 !== 0) {
               event.target.value = '';
+            }
+            if (index == 1) {
+              if (Number(this.maxFloor) < Number(event.target.value)) {
+                event.target.value = '';
+              }
+            }
+            if (index == 2) {
+              if (Number(this.floor) > Number(event.target.value)) {
+                event.target.value = '';
+              }
             }
             this.initOtherData();
             this.propsChange(index, event.target.value);
