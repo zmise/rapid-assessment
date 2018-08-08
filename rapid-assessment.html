@@ -217,25 +217,25 @@
                   <tr>
                     <td>
                       <p>增值税</p>
-                      <div class="value">{{houseTaxList.extraTax}}</div>
+                      <div class="value">{{houseTaxList.extraTax!==''?(houseTaxList.extraTax/1).toFixed(2):''}}</div>
                     </td>
                     <td>
                       <p>城建及教育附加</p>
-                      <div class="value">{{houseTaxList.buildAndEducationTax}}</div>
+                      <div class="value">{{houseTaxList.buildAndEducationTax!==''?(houseTaxList.buildAndEducationTax/1).toFixed(2):''}}</div>
                     </td>
                     <td>
                       <p>契税</p>
-                      <div class="value">{{houseTaxList.contractTax}}</div>
+                      <div class="value">{{houseTaxList.contractTax!==''?(houseTaxList.contractTax/1).toFixed(2):''}}</div>
                     </td>
                   </tr>
                   <tr>
                     <td>
                       <p>贴花税</p>
-                      <div class="value">{{houseTaxList.tieHuaAmount}}</div>
+                      <div class="value">{{houseTaxList.tieHuaAmount!==''?(houseTaxList.tieHuaAmount/1).toFixed(2):''}}</div>
                     </td>
                     <td>
                       <p>个人/企业所得税</p>
-                      <div class="value">{{houseTaxList.personalTax}}</div>
+                      <div class="value">{{houseTaxList.personalTax!==''?(houseTaxList.personalTax/1).toFixed(2):''}}</div>
                     </td>
                     <td>
                       <p>土地增值税</p>
