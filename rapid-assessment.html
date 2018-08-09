@@ -594,14 +594,15 @@
             this.bedRoom = $(val.target).find('option').eq(index).attr('data-bedRoom');
             this.livingRoom = $(val.target).find('option').eq(index).attr('data-livingRoom');
             this.buildArea = $(val.target).find('option').eq(index).attr('data-buildArea');
-            this.direction = $(val.target).find('option').eq(index).attr('data-direction');
-            if (this.direction !== '') {
+            if ($(val.target).find('option').eq(index).attr('data-direction') !== '') {
+              this.direction = $(val.target).find('option').eq(index).attr('data-direction');
               this.directionIndex = $('#direction').find('option[data-value=' + this.direction + ']').val();
               this.directionName = $('#direction').find('option[data-value=' + this.direction + ']').attr(
                 'data-name');
             }
-
-            // this.decoration = $(val.target).find('option').eq(index).attr('data-decoration');
+            if ($(val.target).find('option').eq(index).attr('data-decoration') !== '') {
+              this.decoration = $(val.target).find('option').eq(index).attr('data-decoration');
+            }
             this.initOtherData();
           },
 
